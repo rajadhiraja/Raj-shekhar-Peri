@@ -1,0 +1,56 @@
+Raj Shekhar Peri
+Raj-shekhar-Peri/
+├── .gitignore
+├── LICENSE
+├── README.md
+├── requirements.txt
+│
+├── projects/
+│   ├── nozzle-equations/
+│   │   ├── README.md
+│   │   ├── nozzle_calculator.py
+│   │   ├── examples/
+│   │   │   ├── example_convergent_divergent.py
+│   │   │   └── example_plots.py
+│   │   └── tests/
+│   │       └── test_nozzle.py
+│   │
+│   ├── rocket-simulation/
+│   │   ├── README.md
+│   │   ├── rocket_simulation.py
+│   │   ├── examples/
+│   │   │   ├── single_stage_example.py
+│   │   │   ├── multi_stage_example.py
+│   │   │   └── altitude_study.py
+│   │   └── tests/
+│   │       └── test_simulation.py
+│   │
+│   └── thrust-equation/
+│       ├── README.md
+│       ├── thrust_calculator.py
+│       ├── examples/
+│       │   ├── basic_calculation.py
+│       │   ├── propellant_comparison.py
+│       │   └── altitude_performance.py
+│       └── tests/
+│           └── test_thrust.py
+│
+├── docs/
+│   ├── images/
+│   │   ├── nozzle_diagram.png
+│   │   ├── rocket_trajectory.png
+│   │   └── thrust_components.png
+│   ├── theory/
+│   │   ├── nozzle_theory.md
+│   │   ├── rocket_dynamics.md
+│   │   └── propulsion_fundamentals.md
+│   └── tutorials/
+│       ├── getting_started.md
+│       ├── advanced_usage.md
+│       └── optimization_guide.md
+│
+└── utils/
+    ├── __init__.py
+    ├── atmosphere.py
+    ├── gas_properties.py
+    └── plotting_utils.py
