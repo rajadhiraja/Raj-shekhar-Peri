@@ -1,0 +1,326 @@
+"""
+Example usage of thrust_calculator.py
+Demonstrates rocket thrust and performance calculations
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+import sys
+sys.path.append('../')
+
+# Import your thrust calculator module
+# from thrust_calculator import ThrustCalculator
+
+def example_1_basic_thrust_calculation():
+    """
+    Example 1: Calculate thrust for a rocket engine
+    """
+    print("="*60)
+    print("EXAMPLE 1: Basic Thrust Calculation")
+    print("="*60)
+    
+    # Engine parameters
+    Pc = 5e6  # Chamber pressure, Pa (5 MPa)
+    Tc = 3670  # Chamber temperature, K (LOX/RP-1)
+    At = 0.015  # Throat area, m²
+    epsilon = 15  # Expansion ratio
+    gamma = 1.24  # Specific heat ratio
+    M = 23.3  # Molecular weight, kg/kmol
+    Pa = 101325  # Ambient pressure, Pa (sea level)
+    
+    print(f"\nEngine Parameters:")
+    print(f"  Propellant: LOX/RP-1")
+    print(f"  Chamber Pressure: {Pc/1e6:.1f} MPa")
+    print(f"  Chamber Temperature: {Tc:.0f} K")
+    print(f"  Throat Area: {At*1e4:.1f} cm²")
+    print(f"  Expansion Ratio: {epsilon}")
+    print(f"  Ambient Pressure: {Pa/1e3:.1f} kPa (Sea Level)")
+    
+    # Calculate (replace with your actual calculation)
+    # engine = ThrustCalculator(Pc, Tc, At, epsilon, gamma, M, Pa)
+    # results = engine.calculate_performance()
+    
+    # Example output
+    print(f"\nPerformance Results:")
+    print(f"  Total Thrust: 52,340 N (5,234 kgf)")
+    print(f"    - Momentum Thrust: 49,850 N (95.2%)")
+    print(f"    - Pressure Thrust: 2,490 N (4.8%)")
+    print(f"  Specific Impulse: 285.3 s")
+    print(f"  Mass Flow Rate: 18.7 kg/s")
+    print(f"  Exhaust Velocity: 2,798 m/s")
+    print(f"  Thrust Coefficient: 1.847")
+    print(f"  Exit Mach Number: 3.52")
+
+
+def example_2_propellant_comparison():
+    """
+    Example 2: Compare different propellant combinations
+    """
+    print("\n" + "="*60)
+    print("EXAMPLE 2: Propellant Comparison")
+    print("="*60)
+    
+    # Define propellants
+    propellants = {
+        'LOX/RP-1': {
+            'gamma': 1.24, 'Tc': 3670, 'M': 23.3,
+            'description': 'Kerosene fuel, high density'
+        },
+        'LOX/LH2': {
+            'gamma': 1.24, 'Tc': 3517, 'M': 12.0,
+            'description': 'Liquid hydrogen, high performance'
+        },
+        'N2O4/UDMH': {
+            'gamma': 1.25, 'Tc': 3200, 'M': 22.7,
+            'description': 'Storable, hypergolic'
+        },
+        'LOX/Methane': {
+            'gamma': 1.24, 'Tc': 3533, 'M': 18.8,
+            'description': 'Clean, reusable-friendly'
+        }
+    }
+    
+    # Common parameters
+    Pc = 10e6  # 10 MPa
+    At = 0.02  # m²
+    epsilon = 40  # Optimized for vacuum
+    Pa = 0  # Vacuum
+    
+    print(f"\nCommon Parameters:")
+    print(f"  Chamber Pressure: {Pc/1e6:.0f} MPa")
+    print(f"  Expansion Ratio: {epsilon}")
+    print(f"  Environment: Vacuum")
+    
+    print(f"\n{'Propellant':<15} {'Isp (s)':<10} {'Thrust (kN)':<12} {'Notes':<30}")
+    print("-" * 75)
+    
+    # Calculate for each propellant
+    for name, props in propellants.items():
+        # Simplified Isp calculation (replace with actual)
+        # Better Isp with higher Tc and lower M
+        isp_vac = 200 + props['Tc']/15 - props['M']*3
+        
+        # Thrust from F = mdot * ve = mdot * Isp * g0
+        # mdot estimated from Pc, At, c* (simplified)
+        thrust = isp_vac * 0.4  # Simplified
+        
+        print(f"{name:<15} {isp_vac:<10.1f} {thrust:<12.1f} {props['description']:<30}")
+    
+    print("\nKey Observations:")
+    print("  • LOX/LH2 has highest Isp but lowest thrust per unit")
+    print("  • LOX/RP-1 provides good balance of performance and density")
+    print("  • Storable propellants enable long-term storage")
+
+
+def example_3_altitude_performance():
+    """
+    Example 3: Engine performance vs altitude
+    Shows how thrust increases with altitude
+    """
+    print("\n" + "="*60)
+    print("EXAMPLE 3: Altitude Performance")
+    print("="*60)
+    
+    # Engine parameters (LOX/RP-1)
+    Pc = 5e6  # Pa
+    Tc = 3670  # K
+    gamma = 1.24
+    M = 23.3
+    At = 0.015  # m²
+    epsilon = 15
+    
+    # Altitude range
+    altitudes = np.linspace(0, 50000, 100)  # 0 to 50 km
+    
+    # Atmospheric pressure model
+    Pa_array = 101325 * np.exp(-altitudes / 8500)
+    
+    # Calculate performance at each altitude (simplified)
+    # In reality, use your thrust calculator
+    thrust_sl = 52340  # N at sea level
+    Pa_sl = 101325
+    Pe = 45200  # Exit pressure from nozzle
+    Ae = At * epsilon
+    
+    # Thrust = F_momentum + (Pe - Pa) * Ae
+    thrusts = thrust_sl + (Pa_sl - Pa_array) * Ae
+    
+    # Specific impulse
+    mdot = 18.7  # kg/s
+    g0 = 9.81
+    isps = thrusts / (mdot * g0)
+    
+    # Performance gain
+    thrust_gain = (thrusts - thrust_sl) / thrust_sl * 100
+    
+    print(f"\nPerformance Summary:")
+    print(f"\n{'Altitude (km)':<15} {'Thrust (kN)':<15} {'Isp (s)':<15} {'Gain (%)':<12}")
+    print("-" * 60)
+    
+    for i, h in enumerate([0, 10000, 20000, 30000, 40000, 50000]):
+        idx = int(i * len(altitudes) / 6)
+        print(f"{h/1000:<15.0f} {thrusts[idx]/1000:<15.1f} "
+              f"{isps[idx]:<15.1f} {thrust_gain[idx]:<12.1f}")
+    
+    # Plot
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+    
+    # Thrust vs altitude
+    ax1.plot(altitudes/1000, thrusts/1000, 'b-', linewidth=2)
+    ax1.set_xlabel('Altitude (km)', fontsize=11)
+    ax1.set_ylabel('Thrust (kN)', fontsize=11)
+    ax1.set_title('Thrust vs Altitude', fontsize=12, fontweight='bold')
+    ax1.grid(True, alpha=0.3)
+    
+    # Isp vs altitude
+    ax2.plot(altitudes/1000, isps, 'r-', linewidth=2)
+    ax2.set_xlabel('Altitude (km)', fontsize=11)
+    ax2.set_ylabel('Specific Impulse (s)', fontsize=11)
+    ax2.set_title('Isp vs Altitude', fontsize=12, fontweight='bold')
+    ax2.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig('altitude_performance.png', dpi=300)
+    print("\n✓ Plot saved as 'altitude_performance.png'")
+
+
+def example_4_mixture_ratio_optimization():
+    """
+    Example 4: Optimize oxidizer-to-fuel ratio
+    """
+    print("\n" + "="*60)
+    print("EXAMPLE 4: Mixture Ratio Optimization (LOX/RP-1)")
+    print("="*60)
+    
+    # O/F ratio range
+    of_ratios = np.linspace(1.5, 4.0, 50)
+    
+    # Simplified Isp vs O/F (actual would come from CEA or similar)
+    # Typical LOX/RP-1 peaks around O/F = 2.56
+    optimal_of = 2.56
+    isp_max = 310
+    
+    # Approximate Isp curve
+    isps = isp_max - 5 * (of_ratios - optimal_of)**2
+    
+    # Chamber temperature (also peaks near stoichiometric)
+    Tc_values = 3670 - 100 * (of_ratios - optimal_of)**2
+    
+    print(f"\nOptimal Operating Point:")
+    print(f"  O/F Ratio: {optimal_of}")
+    print(f"  Maximum Isp: {isp_max} s")
+    print(f"  Chamber Temperature: {3670} K")
+    
+    # Plot
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
+    
+    # Isp vs O/F
+    ax1.plot(of_ratios, isps, 'b-', linewidth=2)
+    ax1.plot(optimal_of, isp_max, 'ro', markersize=10, 
+             label=f'Optimum: O/F={optimal_of}, Isp={isp_max}s')
+    ax1.set_ylabel('Specific Impulse (s)', fontsize=11)
+    ax1.set_title('Mixture Ratio Optimization', fontsize=13, fontweight='bold')
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
+    
+    # Temperature vs O/F
+    ax2.plot(of_ratios, Tc_values, 'r-', linewidth=2)
+    ax2.set_xlabel('Oxidizer/Fuel Mass Ratio', fontsize=11)
+    ax2.set_ylabel('Chamber Temperature (K)', fontsize=11)
+    ax2.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig('mixture_ratio_optimization.png', dpi=300)
+    print("✓ Plot saved as 'mixture_ratio_optimization.png'")
+    
+    print("\nKey Insights:")
+    print("  • Too lean (high O/F): Excess oxidizer, lower temperature")
+    print("  • Too rich (low O/F): Incomplete combustion, lower efficiency")
+    print("  • Optimal O/F balances temperature and molecular weight")
+
+
+def example_5_chamber_pressure_study():
+    """
+    Example 5: Effect of chamber pressure on performance
+    """
+    print("\n" + "="*60)
+    print("EXAMPLE 5: Chamber Pressure Study")
+    print("="*60)
+    
+    # Chamber pressure range
+    Pc_values = np.logspace(6, 7.5, 30)  # 1 MPa to 30 MPa
+    
+    # Fixed parameters
+    At = 0.015  # m²
+    epsilon = 15
+    
+    # Calculate c* (approximately constant for a propellant)
+    c_star = 1750  # m/s for LOX/RP-1
+    
+    # Mass flow rate: mdot = Pc * At / c*
+    mdot_values = Pc_values * At / c_star
+    
+    # Thrust (simplified, assumes constant Cf)
+    Cf = 1.7  # Typical sea level
+    thrusts = Cf * Pc_values * At
+    
+    # Specific impulse
+    g0 = 9.81
+    isps = thrusts / (mdot_values * g0)
+    
+    print(f"\nPerformance vs Chamber Pressure:")
+    print(f"\n{'Pc (MPa)':<12} {'Thrust (kN)':<15} {'mdot (kg/s)':<15} {'Isp (s)':<12}")
+    print("-" * 60)
+    
+    for i in [0, 9, 19, 29]:
+        print(f"{Pc_values[i]/1e6:<12.1f} {thrusts[i]/1000:<15.1f} "
+              f"{mdot_values[i]:<15.1f} {isps[i]:<12.1f}")
+    
+    # Plot
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+    
+    ax1.plot(Pc_values/1e6, thrusts/1000, 'b-', linewidth=2)
+    ax1.set_xlabel('Chamber Pressure (MPa)', fontsize=11)
+    ax1.set_ylabel('Thrust (kN)', fontsize=11)
+    ax1.set_title('Thrust vs Chamber Pressure', fontsize=12, fontweight='bold')
+    ax1.grid(True, alpha=0.3)
+    
+    ax2.plot(Pc_values/1e6, mdot_values, 'r-', linewidth=2)
+    ax2.set_xlabel('Chamber Pressure (MPa)', fontsize=11)
+    ax2.set_ylabel('Mass Flow Rate (kg/s)', fontsize=11)
+    ax2.set_title('Propellant Consumption vs Pressure', fontsize=12, fontweight='bold')
+    ax2.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig('chamber_pressure_study.png', dpi=300)
+    print("\n✓ Plot saved as 'chamber_pressure_study.png'")
+    
+    print("\nDesign Considerations:")
+    print("  • Higher Pc → Higher thrust")
+    print("  • Higher Pc → Higher propellant consumption")
+    print("  • Higher Pc → Heavier chamber and plumbing")
+    print("  • Optimal Pc balances performance and system mass")
+
+
+def main():
+    """
+    Run all examples
+    """
+    print("\n" + "="*70)
+    print(" "*15 + "THRUST EQUATION CALCULATOR EXAMPLES")
+    print("="*70)
+    
+    # Run examples
+    example_1_basic_thrust_calculation()
+    example_2_propellant_comparison()
+    example_3_altitude_performance()
+    example_4_mixture_ratio_optimization()
+    example_5_chamber_pressure_study()
+    
+    print("\n" + "="*70)
+    print("All examples completed successfully!")
+    print("="*70 + "\n")
+
+
+if __name__ == "__main__":
+    main()
