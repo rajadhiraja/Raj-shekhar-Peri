@@ -1,0 +1,11 @@
+# For nozzle calculations
+cd projects/nozzle-equations/
+python nozzle_calculator.py
+
+# For rocket simulation
+cd projects/rocket-simulation/
+python rocket_simulation.py
+
+# For thrust calculations
+cd projects/thrust-equation/
+python thrust_equation.py
